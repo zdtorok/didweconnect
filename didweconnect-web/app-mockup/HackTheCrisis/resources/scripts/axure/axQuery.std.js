@@ -619,8 +619,6 @@ $axure.internal(function($ax) {
             }
 
             if (!resizeInfo.easing || resizeInfo.easing == 'none') {
-                query.animate(newLocationAndSizeCss, 0);
-
                 if (childAnimationArray) {
                     $(childAnimationArray).each(function (i, animationObj) {
                         if(animationObj.resizeMatrixFunction) {
@@ -638,7 +636,7 @@ $axure.internal(function($ax) {
                             //    $ax.visibility.setResizedSize(animationObj.obj.id, resizedWidth, resizedHeight);
                             //}
 
-                            $(animationObj.obj).animate(animationObj.sizingCss, 0);
+                            $(animationObj.obj).animate(animationObj.sizingCss, { queue: false, duration: 0 });
                         }
                     });
                 }
@@ -650,7 +648,7 @@ $axure.internal(function($ax) {
                 //        step: textStepFunction
                 //    });
                 //}
-                onComplete();
+                query.animate(newLocationAndSizeCss, { queue: false, duration: 0, complete: onComplete });
             } else {
                 if(childAnimationArray) {
                     $(childAnimationArray).each(function (i, animationObj) {
@@ -1046,7 +1044,8 @@ $axure.internal(function($ax) {
 
                 if(treeNodeButtonShapeId == '') return undefined;
                 return $ax.style.IsWidgetSelected(treeNodeButtonShapeId);
-            } else if ($ax.public.fn.IsImageBox(widgetType) || $ax.public.fn.IsVector(widgetType) || $ax.public.fn.IsTableCell(widgetType) || $ax.public.fn.IsDynamicPanel(widgetType) || $ax.public.fn.IsLayer(widgetType)) {
+            } else if ($ax.public.fn.IsImageBox(widgetType) || $ax.public.fn.IsVector(widgetType) || $ax.public.fn.IsTableCell(widgetType) || $ax.public.fn.IsDynamicPanel(widgetType) || $ax.public.fn.IsLayer(widgetType)
+                || $ax.public.fn.IsTextArea(widgetType) || $ax.public.fn.IsTextBox(widgetType) || $ax.public.fn.IsListBox(widgetType) || $ax.public.fn.IsComboBox(widgetType)) {
                 return $ax.style.IsWidgetSelected(firstId);
             } else if ($ax.public.fn.IsCheckBox(widgetType) || $ax.public.fn.IsRadioButton(widgetType)) {
                 return $jobj($ax.INPUT(firstId)).prop('checked');
@@ -1084,7 +1083,8 @@ $axure.internal(function($ax) {
                 if(treeNodeButtonShapeId == '') continue;
 
                 $ax.tree.SelectTreeNode(elementId, enabled);
-            } else if ($ax.public.fn.IsImageBox(widgetType) || $ax.public.fn.IsVector(widgetType) || $ax.public.fn.IsVector(widgetType) || $ax.public.fn.IsTableCell(widgetType) || $ax.public.fn.IsDynamicPanel(widgetType) || $ax.public.fn.IsLayer(widgetType)) {
+            } else if ($ax.public.fn.IsImageBox(widgetType) || $ax.public.fn.IsVector(widgetType) || $ax.public.fn.IsTableCell(widgetType) || $ax.public.fn.IsDynamicPanel(widgetType) || $ax.public.fn.IsLayer(widgetType)
+                || $ax.public.fn.IsTextArea(widgetType) || $ax.public.fn.IsTextBox(widgetType) || $ax.public.fn.IsListBox(widgetType) || $ax.public.fn.IsComboBox(widgetType)) {
                 $ax.style.SetWidgetSelected(elementIds[index], enabled);
             } else if ($ax.public.fn.IsCheckBox(widgetType) || $ax.public.fn.IsRadioButton(widgetType)) {
                 var query = $jobj($ax.INPUT(elementId));

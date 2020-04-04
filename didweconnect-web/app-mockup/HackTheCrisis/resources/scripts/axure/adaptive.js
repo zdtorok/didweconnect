@@ -324,9 +324,9 @@
         // this style INCLUDES the object's my style
         var compoundStyle = $.extend({}, diagramObject.style, adaptiveStyle);
 
-        if (diagramObject.owner.type == 'Axure:Master' && diagramObject.adaptiveStyles) {
-            adaptiveStyle = $ax.style.computeFullStyle(elementId, state, viewId);
-        }
+        // if (diagramObject.owner.type == 'Axure:Master' && diagramObject.adaptiveStyles) {
+        //     adaptiveStyle = $ax.style.computeFullStyle(elementId, state, viewId);
+        // }
 
         if(!diagramObject.isContained) {
             $ax.style.setAdaptiveStyle(elementId, adaptiveStyle);
@@ -441,7 +441,7 @@
         //If the adaptive plugin hasn't been initialized yet then 
         //save the view to load so that it can get set when initialize occurs
         if (message == 'switchAdaptiveView') {
-            if (window.name != 'mainFrame') return;
+            if (!$axure.utils.isInPlayer()) return;
 
             var href = window.location.href.split('#')[0];
             var lastSlash = href.lastIndexOf('/');
@@ -454,14 +454,14 @@
                 _initialViewToLoad = view;
             } else _handleLoadViewId(view);
         } else if (message == 'setAdaptiveViewForSize') {
-            if (window.name != 'mainFrame') return;
+            if (!$axure.utils.isInPlayer()) return;
 
             _autoIsHandledBySidebar = true;
             if(!_isAdaptiveInitialized()) {
                 _initialViewSizeToLoad = data;
             } else _handleSetViewForSize(data.width, data.height);
         } else if (message == 'getScale') {
-            if (window.name != 'mainFrame') return;
+            if (!$axure.utils.isInPlayer()) return;
 
             var prevScaleN = data.prevScaleN;
             var newScaleN = 1;
@@ -521,7 +521,7 @@
             $axure.messageCenter.postMessage('setContentScale', contentScale);
 
         } else if (message == 'setDeviceMode') {
-            if (window.name != 'mainFrame') return;
+            if (!$axure.utils.isInPlayer()) return;
 
             _isDeviceMode = data.device;
             if (data.device) {
@@ -532,9 +532,9 @@
                 //    $('html').css('height', pageSize.bottom + 'px');
                 //}
                 
-                _removeNiceScroll($('html'));
+                _removeNiceScroll($('html'), true);
                 if (!MOBILE_DEVICE) {
-                    _addNiceScroll($('html'), { emulatetouch: true, horizrailenabled: false });
+                    _addNiceScroll($('html'), { emulatetouch: true, horizrailenabled: false }, true);
                     $('html').addClass('mobileFrameCursor');
                     $('html').css('cursor', 'url(resources/css/images/touch.cur), auto');
                     $('html').css('cursor', 'url(resources/css/images/touch.svg) 32 32, auto');
@@ -561,7 +561,7 @@
                 $('body').css('margin', '0px');
                 $(function () { _setHorizontalScroll(false); });
             } else {
-                _removeNiceScroll($('html'));
+                _removeNiceScroll($('html'), true);
                 $('html').css('overflow-x', '');
                 $('html').css('cursor', '');
                 //$('html').removeAttr('style');
@@ -597,6 +597,17 @@
         $container.niceScroll(options);
         //clean up nicescroll css so child scroll containers show scrollbars in IE
         if (IE) $container.css({ '-ms-overflow-y': '', '-ms-overflow-style': '' });
+        if(IOS) $container.css({ 'overflow-y': ''});
+    }
+
+    //given the element, find the container that's using nice scroll (including the element itself)
+    $ax.adaptive.getNiceScrollContainer = function(element) {
+        var parent = element;
+        while(parent) {
+            if($(parent).getNiceScroll().length > 0) return parent;
+            parent = parent.parentElement;
+        }
+        return undefined;
     }
 
 
